@@ -54,17 +54,21 @@ def first_primitive_root(p):
         
     return i
     
+def is_prime(n):
+    return all([(n%j) for j in range(2, int(n**0.5)+1)]) and n>1
+    
 def all_roots(p):
-    while True:
-        try: 
-            roots = [first_primitive_root(p)]
-            a = first_primitive_root(p)
-            for i in range(2,p):
-                if gcd(i,p-1) == 1: 
-                    roots.append(a ** i % p)
-            return roots
-        except ValueError: 
-            return "Use a prime please" 
+    if is_prime(p) == True:
+        roots = [first_primitive_root(p)]
+        a = first_primitive_root(p)
+        for i in range(2,p):
+            if gcd(i,p-1) == 1: 
+                roots.append(a ** i % p)
+        return roots
+    else: 
+        return "Use a prime please" 
+
+
 
 
 def invmodp(a, p):
@@ -99,7 +103,6 @@ def baby_step_giant_step(h,g,p):
         else:
             store.append(h*pow(z,i) % p)
             
-    
     for j in range(len(group)):
         if group[j]== store[more]:
             k = k+j
@@ -130,8 +133,19 @@ def DH(p,g,a,b):
     s_a = pow(B,a) % p 
 ## Bob 
     s_b = pow(A,b) % p 
-    return {'secret':"The common secret is " + str(s_a), 'A':A,'p':p,'g':g}
+    return {'secret':"The common secret is " + str(s_a), 'A':A,'B':B ,'p':p,'g':g}
 #    print s_a 
 #    print s_b
-D_H = DH(761,6,7,15)
+    
+D_H = DH(13,6,4,8)
+for i in range(1,4): 
+    #print pow(D_H['g'],i) % 13
+    if pow(D_H['g'],i) % 13 == D_H['A']:
+        print "Your secret is not secret, it's " + str(D_H['B']**i % 13)
+        break
+    else: print "I don't know your secret"
+print D_H['secret']
+        
+#D_H = DH(23,5,7,28)
+#D_H1 = DH(23,5,7,6)
 #print "Eve has got your secret " + str(baby_step_giant_step(A,g,p))
